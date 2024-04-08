@@ -96,6 +96,18 @@ impl<T> Mountable for Resource<T> {
     fn security_definitions(&mut self) -> BTreeMap<String, SecurityScheme> {
         mem::take(&mut self.security)
     }
+
+    fn operations_v3(&mut self) -> openapiv3::PathItem {
+        openapiv3::PathItem::default()
+    }
+
+    fn definitions_v3(&mut self) -> BTreeMap<String, openapiv3::Schema> {
+        BTreeMap::new()
+    }
+
+    fn security_definitions_v3(&mut self) -> BTreeMap<String, openapiv3::SecurityScheme> {
+        BTreeMap::new()
+    }
 }
 
 impl<T> Resource<actix_web::Resource<T>>
@@ -492,6 +504,25 @@ impl<T> Mountable for Scope<T> {
             op_map.methods.extend(item.methods);
         }
     }
+
+    fn operations_v3(&mut self) -> BTreeMap<HttpMethod, DefaultOperationRaw> {
+        unimplemented!("Scope has multiple operation maps. Use `update_operations` object instead.")
+    }
+
+    fn definitions_v3(&mut self) -> BTreeMap<String, openapiv3::Schema> {
+        BTreeMap::new()
+    }
+
+    fn security_definitions_v3(&mut self) -> BTreeMap<String, openapiv3::SecurityScheme> {
+        BTreeMap::new()
+    }
+
+    fn update_operations_v3(&mut self, map: &mut BTreeMap<String, openapiv3::PathItem>) {
+        for (path, item) in mem::take(&mut self.path_map_v3) {
+            let op_map = map.entry(path).or_default();
+            op_map.methods.extend(item.methods);
+        }
+    }
 }
 
 /// Wrapper for [`actix_web::web::scope`](https://docs.rs/actix-web/*/actix_web/web/fn.scope.html).
@@ -675,6 +706,18 @@ where
     fn definitions(&mut self) -> BTreeMap<String, DefaultSchemaRaw> {
         mem::take(&mut self.definitions)
     }
+
+    fn operations_v3(&mut self) -> openapiv3::PathItem {
+        openapiv3::PathItem::default()
+    }
+
+    fn definitions_v3(&mut self) -> BTreeMap<String, openapiv3::Schema> {
+        BTreeMap::new()
+    }
+
+    fn security_definitions_v3(&mut self) -> BTreeMap<String, openapiv3::SecurityScheme> {
+        BTreeMap::new()
+    }
 }
 
 /* Service config */
@@ -722,6 +765,18 @@ impl<'a> Mountable for ServiceConfig<'a> {
             let op_map = map.entry(path).or_default();
             op_map.methods.extend(item.methods);
         }
+    }
+
+    fn operations_v3(&mut self) -> openapiv3::PathItem {
+        openapiv3::PathItem::default()
+    }
+
+    fn definitions_v3(&mut self) -> BTreeMap<String, openapiv3::Schema> {
+        BTreeMap::new()
+    }
+
+    fn security_definitions_v3(&mut self) -> BTreeMap<String, openapiv3::SecurityScheme> {
+        BTreeMap::new()
     }
 }
 

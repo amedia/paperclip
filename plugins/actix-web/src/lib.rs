@@ -72,4 +72,25 @@ pub trait Mountable {
             op_map.methods.extend(operations);
         }
     }
+
+    /// Map of HTTP methods and the associated API operations.
+    fn operations_v3(&mut self) -> openapiv3::PathItem;
+
+    /// The definitions recorded by this object.
+    fn definitions_v3(&mut self) -> BTreeMap<String, openapiv3::Schema>;
+
+    /// The security definitions recorded by this object.
+    fn security_definitions_v3(&mut self) -> BTreeMap<String, openapiv3::SecurityScheme>;
+
+    /// Updates the given map of operations with operations tracked by this object.
+    ///
+    /// **NOTE:** Overriding implementations must ensure that the `PathItem`
+    /// is normalized before updating the input map.
+    fn update_operations_v3(&mut self, map: &mut BTreeMap<String, openapiv3::PathItem>) {
+        let operations = self.operations_v3();
+        if !operations.is_empty() {
+            let op_map = map.entry(self.path().into()).or_default();
+            op_map.methods.extend(operations);
+        }
+    }
 }
